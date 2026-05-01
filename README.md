@@ -1,19 +1,20 @@
 
     
-# 1. Instalacja Wazuh Manager na Linux (Parrot OS)
-Najpierw przygotowujemy system, dodajemy klucze i uruchamiamy asystenta instalacji, który skonfiguruje całość (Manager, Indexer, Dashboard).
+# 1. Installing Wazuh Manager on Linux (Parrot OS)
+First, we prepare the system, add the keys, and run the installation assistant, which will configure the entire stack (Manager, Indexer, Dashboard).
+```sudo apt update && sudo apt full-upgrade -y```
 
 ```sudo apt update && sudo apt full-upgrade -y```
 
-## - Dodanie klucza GPG
+## - Adding the GPG key
 ```curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | sudo gpg --dearmor -o /usr/share/keyrings/wazuh-archive-keyring.gpg```
 
-## - Pobranie i uruchomienie skryptu instalacyjnego
+## - Downloading and running the installation script
 `curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh && sudo bash ./wazuh-install.sh -a -i`
 
-Po zakończeniu instalacji w terminalu wyświetli się login i hasło.
+Once the installation is complete, the terminal will display the login and password.
 
-# 2. Weryfikacja statusu usług
+# 2. Verifying service status
 Sprawdzamy, czy wszystko działa:
 
 `sudo systemctl status wazuh-manager`
@@ -22,49 +23,45 @@ Sprawdzamy, czy wszystko działa:
 
 `sudo systemctl status wazuh-dashboard`
 
-# 3. Dostęp do Dashboardu Web
-Aby zalogować się do panelu graficznego, sprawdź adres IP maszyny i wpisz go w przeglądarce.
+# 3. Accessing the Web Dashboard
+To log in to the interface, check the machine's IP address and enter it into your browser.
 
-## - Sprawdzenie lokalnego adresu IP
+## - Checking the local IP address
 `ifconfig`
 
-Adres URL:    https://<twoje_ip> 
+URL: https://<your_ip>
 
-(login i hasło z termianala po instalacji).
+(Use the login and password provided in the terminal after installation).
 
 <img width="1666" height="973" alt="1 dashboard" src="https://github.com/user-attachments/assets/f4cf6beb-9826-4c37-895f-160d9012055d" />
 
-# 4. Rejestracja Agenta na Managerze (Generowanie klucza)
-Zanim zainstalujemy agenta na Windowsie, musimy go zarejestrować w systemie Managera, aby uzyskać klucz uwierzytelniający.
+# 4. Registering an Agent on the Manager (Key Generation)
+Before installing the agent on Windows, we must register it on the Manager system to obtain an authentication key.
 
 `sudo /var/ossec/bin/manage_agents`
 
-#### Kolejne kroki w menu:
+#### Steps in the menu:
 
-Wybierz A, aby dodać agenta.
+1. Select **A** to add an agent.
 
-Nadaj nazwę (np. WindowsHost).
+2. Provide a name (e.g., WindowsHost).
 
-Adres IP pozostaw pusty (chyba że masz statyczne przypisanie).
+3. Leave the IP address blank (unless you have a static assignment).
 
-Po utworzeniu wybierz E, aby wyodrębnić (extract) klucz.
+4. After creation, select **E** to extract the key.
 
-Skopiuj wygenerowany ciąg znaków.
+5. Copy the generated character string.
 
-# 5. Instalacja i konfiguracja Agenta na Windows
-#### Wygenerować komendę w Web GUI.
+# 5. Installing and Configuring the Agent on Windows
+#### Generate the command in the Web GUI:
 
-Wazuh > Agents > Deploy new agent.
+1. Go to **Wazuh > Agents > Deploy new agent**.
 
-Wypełnij pola zgodnie z Twoim setupem:
-
-Package selection: Wybierz ikonkę Windows.
-
-Wazuh server address: Wpisz lokalny adres IP swojej maszyny z wazuh-manager.
-
-Agent name: Nazwij go np. Windows11.
-
-Group: Możesz zostawić default.
+2. Fill in the fields according to your setup:
+   * **Package selection:** Select the Windows icon.
+   * **Wazuh server address:** Enter the local IP address of your wazuh-manager machine.
+   * **Agent name:** Name it, e.g., Windows11.
+   * **Group:** You can leave it as default.
 
 
 <img width="1666" height="973" alt="instal 1" src="https://github.com/user-attachments/assets/c9479ed1-3922-47d3-8477-d92c3be6923f" />
@@ -72,22 +69,22 @@ Group: Możesz zostawić default.
 
 
 
-#### Na dole strony pojawi się gotowa komenda PowerShell.
+#### A PowerShell command will appear at the bottom of the page.
 
-Zaloguj się na maszyne agenta w tym przypadku win11.
+1. Log in to the agent machine (in this case, Win11).
 
-Otwórz PowerShell jako Administrator.
+2. Open **PowerShell as Administrator**.
 
-Wklej komendę i Enter.
+3. Paste the command and press **Enter**.
 
-##### Komenda będzie wyglądać mniej więcej tak:
+#### The command will look something like this:
 
 `Invoke-WebRequest -Uri https://packages.wazuh.com/4.x/windows/wazuh-agent-4.12.msi -OutFile ${env:tmp}\wazuh-agent.msi; msiexec.exe /i ${env:tmp}\wazuh-agent.msi /q WAZUH_MANAGER='1.1.1.1' WAZUH_AGENT_NAME='Windows11'`
 
 <img width="956" height="265" alt="powershell" src="https://github.com/user-attachments/assets/c4f34280-5bd6-4129-9f1d-14ebea9bb3ef" />
 
-## Uruchomienie usługi:
-Jeśli wolisz terminal, użyj jednej z poniższych komend (jako administrator):
+## Starting the service:
+Use one of the following commands (as administrator):
 
 CMD:
 `NET START WazuhSvc`
@@ -95,13 +92,14 @@ CMD:
 PowerShell:
 `Start-Service wazuhsvc`
 
+#### At this point, your Windows agent should appear as Active in the Dashboard.
 
-## Konfiguracja:
- #### 1. Dodawanie Niestandardowej Reguły Alarmowej do testów
+## Configuration:
+ #### 1. Adding a Custom Alert Rule for Testing
 
  `sudo nano /var/ossec/etc/rules/local_rules.xml`
 
- ##### Dodajemy nowa regułe która powiadamia o próbach ataku typu Brute-Force na usługi SSH
+ ##### Add a new rule that notifies about Brute-Force attack attempts on SSH services:
 
  `<group name="local,syslog,sshd,">
   <rule id="100001" level="12"> 
@@ -113,14 +111,14 @@ PowerShell:
   </rule>
 </group>`
 
-Level 12: Nadaje wysoki priorytet alarmu.
+Level 12: Assigns high alarm priority.
 
-if_sid: Łączy regułę z istniejącymi identyfikatorami logów SSH i Windows.
+if_sid: Links the rule to existing SSH and Windows log IDs.
 
-MITRE T1110: Przypisuje zdarzenie do techniki "Brute Force" w oficjalnej klasyfikacji ataków.
+MITRE T1110: Assigns the event to the "Brute Force" technique in the official attack classification.
 
 
-#### 2. Globalna Konfiguracja Serwera
+#### 2. Global Server Configuration
 
 sudo nano /var/ossec/etc/ossec.conf
 
@@ -260,29 +258,27 @@ sudo nano /var/ossec/etc/ossec.conf
 </ossec_config>
 ```
 
-## Test
+## Testing
 
-#### Testujemy czy wazuh wykryje logowania SSH 
+#### Test if Wazuh detects SSH logins
 
-##### Możemy zrobić to manualnie komenda:
+##### You can do this manually with the command:
 
 ``ssh <nazwa_użytkownika>@<adres_agenta>``
 
-##### Lub możemy też użyc do tego hydry:
+##### Or you can use Hydra:
 
 ``hydra -l h -P /usr/share/wordlists/rockyou.txt.gz -t 64 -V -f <ip_agenta> ssh``
 
--t 64 : żeby było dużo połaczeń na raz i zwiekszyło wykrywalność.
+-t 64: To create many simultaneous connections and increase detection.
 
--V : Żeby widzieć każdą próbę w czasie rzeczywistym. (opcjonalne)
+-V: To see every attempt in real-time (optional).
 
--f : kończy atak po znalezieniu poprawnego hasła. (opcjonalne)
+-f: Stops the attack after finding a valid password (optional).
 
 
 
-## Lab
-Wazuh-manager: parrotOS
+## Lab Summary
+Wazuh-manager: Parrot OS
 
-Wazuh-agent: Windows11
-
-W tym momencie Twój agent Windows powinien pojawić się w Dashboardzie jako Active.
+Wazuh-agent: Windows 11

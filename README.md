@@ -15,7 +15,7 @@ First, we prepare the system, add the keys, and run the installation assistant, 
 Once the installation is complete, the terminal will display the login and password.
 
 # 2. Verifying service status
-Sprawdzamy, czy wszystko działa:
+We check if everything works:
 
 `sudo systemctl status wazuh-manager`
 
@@ -264,11 +264,11 @@ sudo nano /var/ossec/etc/ossec.conf
 
 ##### You can do this manually with the command:
 
-``ssh <nazwa_użytkownika>@<adres_agenta>``
+``ssh <User>@<Agent_IP_adress>``
 
 ##### Or you can use Hydra:
 
-``hydra -l h -P /usr/share/wordlists/rockyou.txt.gz -t 64 -V -f <ip_agenta> ssh``
+``hydra -l h -P /usr/share/wordlists/rockyou.txt.gz -t 64 -V -f <Agent's_IP> ssh``
 
 -t 64: To create many simultaneous connections and increase detection.
 

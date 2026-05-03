@@ -104,7 +104,7 @@ PowerShell:
  `<group name="local,syslog,sshd,">
   <rule id="100001" level="12"> 
     <if_sid>18106, 5712, 5763</if_sid> 
-    <description>ALARM: Wykryto atak na SSH/Windows!</description>
+    <description>ALARM: SSH/Windows!</description>
     <mitre>
       <id>T1110</id>
     </mitre>

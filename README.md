@@ -276,8 +276,10 @@ sudo nano /var/ossec/etc/ossec.conf
 
 -f: Stops the attack after finding a valid password (optional).
 
-<img width="960" height="540" alt="image" src="https://github.com/user-attachments/assets/3e82e667-e917-49eb-9a3a-26b1f7f6e918" />
-<img width="960" height="540" alt="image" src="https://github.com/user-attachments/assets/6f0156b5-5dc0-431d-8f9a-5bb5b281ac70" />
+<img width="1320" height="766" alt="image" src="https://github.com/user-attachments/assets/346ba497-67a3-4d01-a44f-adfa7a762c45" />
+
+<img width="1320" height="766" alt="image" src="https://github.com/user-attachments/assets/69f2f554-d48b-4a63-9422-bbc81341fe71" />
+
 
 
 
